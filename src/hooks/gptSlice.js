@@ -17,14 +17,12 @@ const gptSlice = createSlice({
       state.movieNames = movieNames;
       state.movieResults = movieResults;
 
-      // Save to previous searches
       state.previousSearches.push({
         timestamp: Date.now(),
         movieNames,
         movieResults,
       });
 
-      // Keep only last 10 searches
       if (state.previousSearches.length > 1) {
         state.previousSearches.shift();
       }

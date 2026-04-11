@@ -1,7 +1,7 @@
-import { createBrowserRouter } from "react-router-dom";
-import Browse from "./Browse";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from "./Login";
-import { RouterProvider } from "react-router-dom";
+import Browse from "./Browse";
+import { LanguageProvider } from "../context/LanguageContext";
 
 const Body = () => {
   const appRouter = createBrowserRouter([
@@ -16,9 +16,10 @@ const Body = () => {
   ]);
 
   return (
-    <div>
+    <LanguageProvider>
       <RouterProvider router={appRouter} />
-    </div>
+    </LanguageProvider>
   );
 };
+
 export default Body;

@@ -6,16 +6,19 @@ import { LOGO, SUPPORTED_LANGUAGES } from "../utils/constants";
 import { auth } from "../utils/firebase";
 import { addUser, removeUser } from "../utils/userSlice";
 import { toggleGptSearchView } from "../utils/gptSlice";
-import { changeLanguage } from "../utils/configSlice";
+import useLanguage from "../hooks/useLanguage";
+import useOnlineStatus from "../hooks/useOnlineStatus";
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
   const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
-  const handleSignOut = () => {
+  const { lang, changeLanguage } = useLanguage();
+  const isOnline = useOnlineStatus();
+   const handleSignOut = () => {
     signOut(auth)
-      .then(() => {})
+      .then(() => { })
       .catch((error) => {
         navigate("/error");
       });
@@ -40,28 +43,32 @@ const Header = () => {
       }
     });
 
-    // Unsiubscribe when component unmounts
     return () => unsubscribe();
   }, []);
 
   const handleGptSearchClick = () => {
-    // Toggle GPT Search
     dispatch(toggleGptSearchView());
   };
 
-  const handleLanguageChange = (e) => {
-    dispatch(changeLanguage(e.target.value));
-  };
-
   return (
-    <div className="absolute w-screen px-8 py-2 bg-gradient-to-b from-black z-10 flex flex-col md:flex-row justify-between">
-      <img className="w-44 mx-auto md:mx-0" src={LOGO} alt="logo" />
+    <div
+  className={`fixed left-0 w-full px-8 py-2 bg-gradient-to-b from-black z-40 flex justify-between items-center ${
+    isOnline ? "top-0" : "top-6"
+  }`}
+>
+      {/* <img className="w-44 mx-auto md:mx-0" src={LOGO} alt="logo" /> */}
+      <img
+        class="w-24 h-24 object-contain"
+        alt="logo-icon"
+        src="../../logo.png"
+      />
       {user && (
-        <div className="flex p-2 justify-between">
+        <div className="flex items-center gap-4">
           {showGptSearch && (
             <select
-              className="p-2 m-2 bg-gray-900 text-white"
-              onChange={handleLanguageChange}
+              value={lang}
+              className="p-2 bg-gray-900 text-white rounded-lg"
+              onChange={(e) => changeLanguage(e.target.value)}
             >
               {SUPPORTED_LANGUAGES.map((lang) => (
                 <option key={lang.identifier} value={lang.identifier}>
@@ -71,19 +78,23 @@ const Header = () => {
             </select>
           )}
           <button
-            className="py-2 px-4 mx-4 my-2 bg-purple-800 text-white rounded-lg"
+            className="py-1 px-4 my-1 bg-purple-800 text-white rounded-lg"
             onClick={handleGptSearchClick}
           >
             {showGptSearch ? "Homepage" : "GPT Search"}
           </button>
-          <img
-            className="hidden md:block w-12 h-12"
+         
+          <button
+            onClick={handleSignOut}
+            className="py-1 px-4 my-1 bg-red-800 text-white rounded-lg hover:bg-red-900"
+          >
+            LogOut
+          </button>
+           <img
+            className="hidden md:block w-10 h-10 rounded-full object-cover border-2 border-white"
             alt="usericon"
             src={user?.photoURL}
           />
-          <button onClick={handleSignOut} className="font-bold text-white ">
-            (Sign Out)
-          </button>
         </div>
       )}
     </div>

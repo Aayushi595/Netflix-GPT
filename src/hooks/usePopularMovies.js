@@ -2,25 +2,36 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { API_OPTIONS } from "../utils/constants";
 import { addPopularMovies } from "../utils/moviesSlice";
+import { isDataStale } from "../utils/cacheUtils";
+import useOnlineStatus from "./useOnlineStatus";
 
 const usePopularMovies = () => {
-  // Fetch Data from TMDB API and update store
+  const isOnline = useOnlineStatus(); 
   const dispatch = useDispatch();
-
-  const popularMovies = useSelector((store) => store.movies.popularMovies);
+  const popularMovies = useSelector((store) => store.movies?.popularMovies);
+  const lastFetchTime = useSelector((store) => store.movies?.lastFetchTime?.popularMovies);
 
   const getPopularMovies = async () => {
-    const data = await fetch(
-      "https://api.themoviedb.org/3/movie/popular?page=1",
-      API_OPTIONS
-    );
-    const json = await data.json();
-    dispatch(addPopularMovies(json.results));
+    if (!isOnline) return;
+    if (popularMovies && !isDataStale(lastFetchTime)) return;
+
+    try {
+      const response = await fetch(
+        "https://api.themoviedb.org/3/movie/popular?page=1",
+        API_OPTIONS
+      );
+      const json = await response.json();
+      dispatch(addPopularMovies(json.results));
+    } catch (error) {
+      console.error("Error fetching popular movies:", error);
+    }
   };
 
   useEffect(() => {
-    !popularMovies && getPopularMovies();
-  }, []);
+    getPopularMovies();
+  }, [isOnline]); 
+
+  return { data: popularMovies };
 };
 
 export default usePopularMovies;

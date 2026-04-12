@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { API_OPTIONS } from "../utils/constants";
 import { addTrailerVideo } from "../utils/moviesSlice";
@@ -11,7 +11,7 @@ const useMovieTrailer = (movieId) => {
   const lastFetchTime = useSelector((store) => store.movies?.lastFetchTime?.trailerVideo);
   console.log("trailerVideoss", trailerVideo);
 
-  const getMovieVideos = async () => {
+  const getMovieVideos = useCallback(async () => {
     if (trailerVideo && !isDataStale(lastFetchTime)) return;
 
     try {
@@ -32,13 +32,13 @@ const useMovieTrailer = (movieId) => {
     } catch (error) {
       console.error("❌ Error fetching trailer:", error);
     }
-  };
+  }, [movieId, dispatch, trailerVideo, lastFetchTime]);
   
   useEffect(() => {
     if (movieId) {
       getMovieVideos();
     }
-  }, [movieId, dispatch]);
+  }, [movieId, getMovieVideos]);
 };
 
 export default useMovieTrailer;

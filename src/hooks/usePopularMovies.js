@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { API_OPTIONS } from "../utils/constants";
 import { addPopularMovies } from "../utils/moviesSlice";
@@ -11,7 +11,7 @@ const usePopularMovies = () => {
   const popularMovies = useSelector((store) => store.movies?.popularMovies);
   const lastFetchTime = useSelector((store) => store.movies?.lastFetchTime?.popularMovies);
 
-  const getPopularMovies = async () => {
+  const getPopularMovies = useCallback(async () => {
     if (!isOnline) return;
     if (popularMovies && !isDataStale(lastFetchTime)) return;
 
@@ -25,11 +25,11 @@ const usePopularMovies = () => {
     } catch (error) {
       console.error("Error fetching popular movies:", error);
     }
-  };
+  }, [isOnline, popularMovies, lastFetchTime, dispatch]);
 
   useEffect(() => {
     getPopularMovies();
-  }, [isOnline]); 
+  }, [getPopularMovies]); 
 
   return { data: popularMovies };
 };

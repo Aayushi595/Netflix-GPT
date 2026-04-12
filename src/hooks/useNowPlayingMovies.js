@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { API_OPTIONS } from "../utils/constants";
 import { addNowPlayingMovies } from "../utils/moviesSlice";
@@ -11,7 +11,7 @@ const useNowPlayingMovies = () => {
   const nowPlayingMovies = useSelector((store) => store.movies?.nowPlayingMovies);
   const lastFetchTime = useSelector((store) => store.movies?.lastFetchTime?.nowPlayingMovies);
 
-  const getNowPlayingMovies = async () => {
+  const getNowPlayingMovies = useCallback(async () => {
     if (!isOnline) return;
     if (nowPlayingMovies && !isDataStale(lastFetchTime)) return;
 
@@ -25,11 +25,11 @@ const useNowPlayingMovies = () => {
     } catch (error) {
       console.error("Error fetching now playing movies:", error);
     }
-  };
+  }, [isOnline, nowPlayingMovies, lastFetchTime, dispatch]);
 
   useEffect(() => {
     getNowPlayingMovies();
-  }, [isOnline]);
+  }, [getNowPlayingMovies]);
 
   return { data: nowPlayingMovies };
 };

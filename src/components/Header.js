@@ -36,10 +36,14 @@ const Header = () => {
             photoURL: photoURL,
           })
         );
-        navigate("/browse");
+        if (window.location.pathname === "/") {
+          navigate("/browse");
+        }
       } else {
         dispatch(removeUser());
-        navigate("/");
+        if (window.location.pathname !== "/") {
+          navigate("/");
+        }
       }
     });
 
@@ -58,7 +62,7 @@ const Header = () => {
 >
       {/* <img className="w-44 mx-auto md:mx-0" src={LOGO} alt="logo" /> */}
       <img
-        class="w-24 h-24 object-contain"
+        className="w-24 h-24 object-contain"
         alt="logo-icon"
         src="../../logo.png"
       />

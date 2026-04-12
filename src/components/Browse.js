@@ -12,7 +12,7 @@ import usePopularMovies from "../hooks/usePopularMovies";
 const Browse = () => {
   const isOnline = useOnlineStatus();
   const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
-  const selectedMovie = useSelector((store) => store.movies.selectedMovie);
+  const selectedMovie = useSelector((store) => store.movies?.selectedMovie);
 
   const { data: nowPlaying, isLoading: loadingNow } = useNowPlayingMovies();
   const { data: popular, isLoading: loadingPopular } = usePopularMovies();
